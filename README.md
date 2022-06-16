@@ -27,7 +27,7 @@ scores = activation.relu(neuron)
 loss = loss.meanSquareError(scores, answer)
 ```
 
-Using these basic methods togheter with the Node module, we have all the necessarry tools for an neural network.
+Using these basic methods togheter with the Node module, we get all the necessarry tools for an neural network.
 
 The ```Tipo.Node``` support many different layer type such as convolutional layers and linear layers. To use the Node Module we first import the library using 
 
