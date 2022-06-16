@@ -16,7 +16,7 @@ To download the library you use the following command, because of frequent updat
 The ```Tipo.Functional``` supports many activation and cost functions to use them simply use the command
 ```python
 # Imports the Functional modules
-From Tipo.Functional import activation
+from Tipo.Functional import activation
 
 # Outputs the activation of a certain neuron
 scores = activation.relu(neuron)
