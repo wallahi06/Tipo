@@ -1,1 +1,1 @@
-import Tipo.Functional
+from Tipo.Functional import Activation
