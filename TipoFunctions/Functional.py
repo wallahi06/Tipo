@@ -46,7 +46,18 @@ class Activation:
 
 activation = Activation()
 
-class optimizer:
+class Loss:
 
     def __init__(self):
         pass
+
+    def meanAbsoluteError(self, true_value, prediction):
+        true_value, prediction = np.array(true_value), np.array(prediction)
+        return np.mean(np.abs(true_value - prediction))
+
+    def meanSquareError(self, true_value, prediction):
+        true_value, prediction = np.array(true_value), np.array(prediction)
+        return np.square(true_value - prediction).mean()
+
+    
+loss = Loss()
