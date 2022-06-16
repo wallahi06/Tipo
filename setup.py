@@ -1,24 +1,27 @@
 from setuptools import setup, find_packages
+import codecs
+import os
 
-classifiers = [
-    'Development Status :: 5 - Production/Stable',
-    'Intended Audience :: Education',
-    'Operating System :: Microsoft :: Windows :: Windows 10',
-    'License :: OSI Approved :: MIT License',
-    'Programming Language :: Python :: 3'
-]
+VERSION = '0.0.1'
+DESCRIPTION = 'The Tipo Library consists of great AI tools'
 
+# Setting up
 setup(
-    name='Tipo',
-    version='0.0.21',
-    description='The Tipo Library consists of great AI tools',
+    name="Tipo",
+    version=VERSION,
+    author="NeuralNine (Florian Dedov)",
+    author_email="<mail@neuralnine.com>",
+    description=DESCRIPTION,
     long_description=open('README.txt').read() + '\n\n' + open('CHANGELOG.txt').read(),
-    url='',
-    author='Liam Nordvall',
-    author_email='liam_nordvall@hotmail.com',
-    license='MIT',
-    classifiers=classifiers,
-    keywords='Deeplearning',
     packages=find_packages(),
-    install_requires=[]
+    install_requires=['numpy'],
+    keywords=['python', 'deeplearning', 'AI', 'machine learning'],
+    classifiers=[
+        "Development Status :: 1 - Planning",
+        "Intended Audience :: Developers",
+        "Programming Language :: Python :: 3",
+        "Operating System :: Unix",
+        "Operating System :: MacOS :: MacOS X",
+        "Operating System :: Microsoft :: Windows",
+    ]
 )
