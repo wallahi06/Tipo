@@ -1,1 +1,2 @@
-from Tipo.Functional import Activation
+from tipo.Functional import activation
+from tipo.Functional import loss
