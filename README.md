@@ -15,7 +15,7 @@ To download the library you use the following command, because of frequent updat
 ## Usage
 The Tipo Library is a very easy to use and efficent research tool for AI researchers, it includes a fully customizable forward propagations system using our new module named Node, combining that with our Functional module that consists of all necessarry functions and methods to create a fully working AI. 
 
-The ```Tipo.Functional``` supports many activation and cost functions to use them simply use the command
+The ```Tipo.Functional``` supports many activation and cost functions to use them simply use the script
 ```python
 # Imports the Functional modules
 from Tipo.Functional import activation, loss
