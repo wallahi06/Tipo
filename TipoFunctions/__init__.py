@@ -1,1 +1,1 @@
-
+from Tipo import Functional
