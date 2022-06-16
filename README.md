@@ -7,7 +7,7 @@ back propagation and easy to use forward propagation methods.
 
 
 ## Installation
-To download the library you use the following command, because of frequent updates we recommend to use the ```--upgrade``` syntax
+To download the library you use the following command, because of frequent updates we recommend to use the     ```--upgrade``` syntax
 ```
   pip install --upgrade tipo
 ```
