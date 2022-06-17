@@ -94,19 +94,30 @@ activation = ActivationFunctions()
 # much easier by naming the methods to relevant names and using few parameters but at the same time giving 
 # more parameters for fine-tuning to our professional users.
 
+
 class LossFunctions:
 
-    def __init__(self):
-        pass
+  def __init__(self):
+       pass
 
-    def meanAbsoluteError(self, true_value, prediction):
+  def MAELoss(self):
+    def MAELossCall(true_value, prediction):
         true_value, prediction = np.array(true_value), np.array(prediction)
         return np.mean(np.abs(true_value - prediction))
+    return MAELossCall
 
-    def meanSquareError(self, true_value, prediction):
+  def MSELoss(self):
+    def MSELossCall(true_value, prediction):
         true_value, prediction = np.array(true_value), np.array(prediction)
         return np.square(true_value - prediction).mean()
+    return MSELossCall
 
+  def MBELoss(self):
+    def MBELossCall(true_value, prediction):
+        true_value, prediction = np.array(true_value), np.array(prediction)
+        return (true_value - prediction).mean()
+    return MBELossCall
+    
 
 loss = LossFunctions()
 
