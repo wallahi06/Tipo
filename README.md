@@ -86,7 +86,8 @@ We then initialize the forward propagation
 
         return self.fc3.output
 
-``` Now we setup the network and forwards some data trougth it 
+``` 
+Now we setup the network and forwards some data trougth it 
 ```python
 # Initlizing Neural Network and forward propagation
 NN = NeuralNet()
