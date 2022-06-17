@@ -86,7 +86,8 @@ output = NN.forward()
 
 
 # Finding the loss of our predictions
-score = loss.meanSquareError(data, output)
+criterion = loss.MSELoss()
+score = criterion(data, score)
 print(score)
 
 
