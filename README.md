@@ -68,28 +68,29 @@ data = [[1.0, 2.0, 3.0, 2.5], [2.0, 5.0, -1.0, 2.0], [-1.2, 2.4, 1.5, -2.0]]
 
 # Neural Network
 class NeuralNet():
-    def __init__(self, data):
-        self.data = data
-        self.fc1 = N.LinearPass(4, 6)
-        self.fc2 = N.LinearPass(6, 4)
+    def __init__(self):
+        # initializing the network layers
+        self.fc1 = N.LinearPass(4, 16)
+        self.fc2 = N.LinearPass(16, 16)
+        self.fc3 = N.LinearPass(16, 4)
 
-    def forward(self):
-        self.fc1.passData(activation.relu(self.data))
+    def forward(self, batch):
+        # Setting up our forward propagation
+        self.fc1.passData(activation.relu(batch))
         self.fc2.passData(activation.relu(self.fc1.output))
+        self.fc3.passData(self.fc2.output)
 
-        return self.fc2.output
+        return self.fc3.output
 
 
 # Initlizing Neural Network and forward propagation
-NN = NeuralNet(data)
-output = NN.forward()
+NN = NeuralNet()
+output = NN.forward(data)
 
 
-# Finding the loss of our predictions
+# Finding the loss of our predictions using the MSE function
 criterion = loss.MSELoss()
-score = criterion(data, score)
-print(score)
-
+score = criterion(data, output)
 
 ```
 
