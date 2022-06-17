@@ -9,8 +9,8 @@ DESCRIPTION = 'The Tipo Library consists of great AI tools'
 setup(
     name="Tipo",
     version=VERSION,
-    author="NeuralNine (Florian Dedov)",
-    author_email="<mail@neuralnine.com>",
+    author="Liam Nordvall",
+    author_email="<liam_nordvall@hotmail.com>",
     description=DESCRIPTION,
     long_description=open('README.txt').read() + '\n\n' + open('CHANGELOG.txt').read(),
     packages=find_packages(),
