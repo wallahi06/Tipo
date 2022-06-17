@@ -76,7 +76,6 @@ class ActivationFunctions:
         data = values/(1-np.exp(-values))
         return data
 
-
     # Linear Activation Functions 
 
     def softmax(self, values):
