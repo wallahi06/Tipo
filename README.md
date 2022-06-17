@@ -56,6 +56,10 @@ This is how easy it is to set up an network, now we can use this network to make
 - Python 3.0+
 
 
+## To round of
+This library was developed in collaboration with my research team, we will continue the development of this library and have many cool features that we want to implement if you have any ideas or want to be part of our project then contact us at my email liam_nordvall@hotmail.com. Have an awesome day!
+
+
 ## Example
 First we import the necesssary libraries
 ```Python 
