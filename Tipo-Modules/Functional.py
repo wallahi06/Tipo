@@ -15,6 +15,48 @@ class ActivationFunctions:
     def __init__(self):
         pass
 
+    # Non-linear Activation Functions
+
+    def elu(self, values, a=0.1, gradient=1):
+        values = np.array(values, dtype=float)
+        data = np.where(values > 0, values*gradient, a*(np.exp(values)-1))
+        return data
+
+    def hardsigmoid(self, values):
+        values = np.array(values)
+        data = np.maximum(0, np.minimum(1, (values  + 2) / 4))
+        return data
+
+    def hardtahn(self, values, min_value=-1, max_value=1):
+        values = np.array(values)
+        data = np.where(values > max_value, 1, np.where(values < min_value, -1, values))
+        return data
+
+    def hardswish(self, values):
+        values = np.array(values)
+        data = np.where(values <= -3, 0, np.where(values >= 3, values, (values * (values+3))/6))
+        return data
+
+    def logsigmoid(self, values):
+        values = np.array(values)
+        data = np.log(1/(1+np.exp(-values)))
+        return data
+
+    def sigmoid(self, values):
+        values = np.array(values)
+        data = 1 / (1 + np.exp(-values))
+        return data
+
+    def relu(self, values, gradient=1):
+        values = np.array(values, dtype=float)
+        data = np.where(values > 0, values*gradient, 0)
+        return data
+    
+    def tanh(self, values):
+        values = np.array(values)
+        data = 2/(1 + np.exp(-2*values)) - 1
+        return data
+
     def binarystep(self, values):
         values = np.array(values, dtype=float)
         data = np.heaviside(values, 1)
@@ -23,35 +65,19 @@ class ActivationFunctions:
     def linear(self, values, gradient=2):
         return np.array(values, dtype=float)*gradient
 
-    def sigmoid(self, values):
-        values = np.array(values)
-        data = 1 / (1 + np.exp(-values))
-        return data
-
-    def tanh(self, values):
-        values = np.array(values)
-        data = 2/(1 + np.exp(-2*values)) - 1
-        return data
-
-    def relu(self, values, gradient=1):
-        values = np.array(values, dtype=float)
-        data = np.where(values > 0, values*gradient, 0)
-        return data
 
     def leakyrelu(self, values, gradient=1, leak=0.01):
         values = np.array(values, dtype=float)
         data = np.where(values > 0, values*gradient, values*leak)    
         return data                      
 
-    def elu(self, values, a=0.1, gradient=1):
-        values = np.array(values, dtype=float)
-        data = np.where(values > 0, values*gradient, a*(np.exp(values)-1))
-        return data
-
     def swish(self, values):
         values = np.array(values, dtype=float)
         data = values/(1-np.exp(-values))
         return data
+
+
+    # Linear Activation Functions 
 
     def softmax(self, values):
         values = np.array(values)
