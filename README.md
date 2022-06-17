@@ -57,11 +57,13 @@ This is how easy it is to set up an network, now we can use this network to make
 
 
 ## Example
+First we import the necesssary libraries
 ```Python 
 from tipo.Functional import activation, loss
 import tipo.Node as N
-
-
+```
+Then we use some example data and set up the network structure
+```Python
 # Example data
 data = [[1.0, 2.0, 3.0, 2.5], [2.0, 5.0, -1.0, 2.0], [-1.2, 2.4, 1.5, -2.0]]
 
@@ -73,7 +75,9 @@ class NeuralNet():
         self.fc1 = N.LinearPass(4, 16)
         self.fc2 = N.LinearPass(16, 16)
         self.fc3 = N.LinearPass(16, 4)
-
+```
+We then initialize the forward propagation
+```Python
     def forward(self, batch):
         # Setting up our forward propagation
         self.fc1.passData(activation.relu(batch))
@@ -82,18 +86,21 @@ class NeuralNet():
 
         return self.fc3.output
 
-
+``` Now we setup the network and forwards some data trougth it 
+```python
 # Initlizing Neural Network and forward propagation
 NN = NeuralNet()
 output = NN.forward(data)
-
+```
+We then use some functions from the ```tipo.Functional``` library to calculate the loss
+```python
 
 # Finding the loss of our predictions using the MSE function
 criterion = loss.MSELoss()
 score = criterion(data, output)
 
 ```
-
+Thats how easy it is to set up an neural network using the Tipo library!
 
 
 
