@@ -6,12 +6,18 @@
 import numpy as np
 
 
-# This class consists of all the necessary activation functions needed for AI development
+# This class consists of all the necessary activation functions needed, we have put them into different
+# methods to make it easy to use together with other modules. We made the methods ready to use but also 
+# added additional parameters for our professional users.
 
 class ActivationFunctions:
 
     def __init__(self):
         pass
+
+    # Only returns the values for layers without activation
+    def none(self, values):
+        return values
 
     # Non-linear Activation Functions
 
@@ -83,12 +89,15 @@ class ActivationFunctions:
 
 
 # We initialize the class with a keyword for easier use, namely, instead of writing activation = ActivationFunctions() 
-# you just import activation class from Tipo.Functional to get access to all the activation functions with activation.relu for example
+# you just import activation class from Tipo.Functional to get access to all the activation functions
 
 activation = ActivationFunctions()
 
 
-# This class includes all the important Loss and Cost functions
+# This class includes all the important Loss and Cost functions, we have made the use of these functions
+# much easier by naming the methods to relevant names and using few parameters but at the same time giving 
+# more parameters for fine-tuning to our professional users.
+
 
 class LossFunctions:
 
