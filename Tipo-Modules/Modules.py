@@ -4,7 +4,7 @@ import gc
 
 
 # This is the
-class NodeModule():
+class Node():
 
   def __init__(self):
     pass
@@ -12,7 +12,7 @@ class NodeModule():
   # This methods prints the network structure of our network when the class gets called
   def __call__(self): 
     for obj in gc.get_objects():
-      if isinstance(obj, self.linearLayer):
+      if isinstance(obj, self.LinearLayer):
         print('[' + str(obj) + ", num_inputs: " + str(obj.num_inputs) + " num_neurons:"  + str(obj.num_neurons) + '],')
 
 
@@ -33,4 +33,3 @@ class NodeModule():
       return output
 
    
-Node = NodeModule()
