@@ -68,6 +68,11 @@ class Activation:
         return self.d_activation
 
 
+# # # # # # # # # # # # # # # #
+# Linear Activation functions #
+# # # # # # # # # # # # # # # # 
+
+
 # This is a child class of the Activation class that applies the ReLu Activation to its input
 class ReLu(Activation):
 
@@ -75,7 +80,7 @@ class ReLu(Activation):
         super().__init__(input)
         self.gradient = gradient
         activation = np.where(self.input > 0, self.input * self.gradient, 0)
-        d_activation = 2
+        d_activation = (self.input > 0) * 1
         super().__init__(input, activation, d_activation)
 
 
@@ -85,7 +90,7 @@ class Sigmoid(Activation):
     def __init__(self, input):
         super().__init__(input)
         activation = 1 / (1 + np.exp(-self.input))
-        d_activation = 2
+        d_activation = activation * (1 - activation)
         super().__init__(input, activation, d_activation)
 
 
@@ -96,10 +101,28 @@ class ELU(Activation):
         super().__init__(input)
         self.gradient, self.a = gradient, a
         activation = np.where(self.input > 0, self.input * self.gradient, self.a * (np.exp(self.input) - 1))
-        d_activation = 2
+        d_activation = np.where(self.input <= 0, activation+a, 1)
         super().__init__(input, activation, d_activation)
 
 
+# This is a child class of the Activation class that applies the ReLu Activation to its input
+class Tanh(Activation):
+
+    def __init__(self, input):
+      super().__init__(input)
+      activation = np.tanh(self.input)
+      d_activation = 1 - activation ** 2
+      super().__init__(input, activation, d_activation)
+
+
+class LeakyReLu(Activation):
+  def __init__(self, input, gradient=1, leak=0.01):
+    super().__init__(input)
+    self.gradient, self.leak = gradient, leak
+    activation =  np.where(self.input > 0, self.input*self.gradient, self.input*self.leak)  
+    d_activation = np.where(self.input < 0, self.leak, 1)
+    super().__init__(input, activation, d_activation)
+       
 # This is a child class of the Activation class that applies the ReLu Activation to its input
 class HardSigmoid(Activation):
 
@@ -138,18 +161,18 @@ class BinaryStep(Activation):
     def __init__(self, input):
         super().__init__(input)
         activation = np.heaviside(self.input, 1)
-        d_activation = 2
+        d_activation = None
         super().__init__(input, activation, d_activation)
 
 
 # This is a child class of the Activation class that applies the ReLu Activation to its input
-class LinearActivation(Activation):
+class Linear(Activation):
 
     def __init__(self, input, gradient=2):
         super().__init__(input)
         self.gradient = gradient
         activation = np.array(self.input, dtype=float) * self.gradient
-        d_activation = 2
+        d_activation = 1
         super().__init__(input, activation, d_activation)
 
 
@@ -159,5 +182,22 @@ class Swish(Activation):
     def __init__(self, input):
         super().__init__(input)
         activation = self.input / (1 - np.exp(-self.input))
-        d_activation = 2
+        d_activation = self.input / (1. + np.exp(-self.input)) + (1. / (1. + np.exp(-self.input))) * (1. - self.input * (1. / (1. + np.exp(-self.input))))
         super().__init__(input, activation, d_activation)
+
+
+# # # # # # # # # # # # # # # # # #
+# Non Linear Activation functions #
+# # # # # # # # # # # # # # # # # #
+
+class Softmax(Activation):
+
+  def __init__(self, input):
+    super().__init__(input)
+    activation = np.exp(self.input)  / np.exp(self.input).sum()
+    d_activation = None
+    super().__init__(input, activation, d_activation)
+
+
+fc1 = Softmax(-1).backward
+print(fc1())
