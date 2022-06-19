@@ -51,7 +51,7 @@ class meanBiasError(Loss):
 
 
 
-
+# Linear Activation Functions
 # This class applies the ReLu Activation to its input
 class ReLu():
 
@@ -92,7 +92,7 @@ class ELU():
       return self.activation
 
     def prime(self):
-      return np.where(self.input <= 0, self.activation+self.a, 1)
+      return np.where(self.inputs <= 0, self.activation+self.a, 1)
 
 
 # This class applies the Tanh Activation to its input
@@ -198,17 +198,13 @@ class Swish():
       self.inputs = np.array(inputs)
 
     def __call__(self):
-      return self.input / (1 - np.exp(-self.input))
+      return self.inputs / (1 - np.exp(-self.inputs))
 
     def prime(self):
       return self.inputs / (1 + np.exp(-self.inputs)) + (1. / (1. + np.exp(-self.inputs))) * (1. - self.inputs * (1. / (1. + np.exp(-self.inputs))))
 
 
-# # # # # # # # # # # # # # # # # #
-# Non Linear Activation functions #
-# # # # # # # # # # # # # # # # # #
-
-
+# Non Linear Activation functions 
 # This class that applies the Softmax Activation to its input
 class Softmax():
 
@@ -216,7 +212,7 @@ class Softmax():
       self.inputs = np.array(inputs)
 
     def __call__(self):
-      return np.exp(self.input)  / np.exp(self.input).sum()
+      return np.exp(self.inputs)  / np.exp(self.inputs).sum()
 
     def prime(self):
       return None
