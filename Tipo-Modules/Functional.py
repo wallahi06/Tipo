@@ -2,24 +2,15 @@ import numpy as np
 
 
 # This is the base class for all the loss and cost functions
-class Loss:
-    def __init__(self, true_value, prediction):
-        self.true_value = np.array(true_value)
-        self.prediction = np.array(prediction)
 
-    def __call__(self):
-        pass
-
-    def backward(self):
-        pass
 
 
 # This is a child class of the loss class, it calculates the MSE Loss
-class meanSquareError(Loss):
-    def __init__(self, true_value, prediction):
-        super().__init__(true_value, prediction)
+class meanSquareError():
 
-    def __call__(self):
+    def __call__(self, true_value, prediction):
+        self.true_value = true_value
+        self.prediction = prediction
         return np.mean(np.power(self.true_value - self.prediction, 2))
 
     def backward(self):
@@ -27,11 +18,11 @@ class meanSquareError(Loss):
 
 
 # This is a child class of the loss class, it calculates the MAE Loss
-class meanAbsoluteError(Loss):
-    def __init__(self, true_value, prediction):
-        super().__init__(true_value, prediction)
+class meanAbsoluteError():
 
-    def __call__(self):
+    def __call__(self, true_value, prediction):
+        self.true_value = true_value
+        self.prediction = prediction
         return np.mean(np.abs(self.true_value - self.prediction))
 
     def backward(self):
@@ -39,11 +30,11 @@ class meanAbsoluteError(Loss):
 
 
 # This is a child class of the loss class, it calculates the MBE Loss
-class meanBiasError(Loss):
-    def __init__(self, true_value, prediction):
-        super().__init__(true_value, prediction)
+class meanBiasError():
 
-    def __call__(self):
+    def __call__(self, true_value, prediction):
+        self.true_value = true_value
+        self.prediction = prediction
         return (self.true_value - self.prediction).mean()
 
     def backward(self):
@@ -216,3 +207,4 @@ class Softmax():
 
     def prime(self):
       return None
+
