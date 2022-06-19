@@ -1,127 +1,163 @@
-# This code is under MIT License and free to use as it is, the code have been written by Liam Nordvall 
-# together with Lord Hummer. The module includes most of the functions needed for everything from basic
-# Neural Networks to more deep networks with many layers and nodes.
-
-
 import numpy as np
 
 
-# This class consists of all the necessary activation functions needed, we have put them into different
-# methods to make it easy to use together with other modules. We made the methods ready to use but also 
-# added additional parameters for our professional users.
+# This is the base class for all the loss and cost functions
+class Loss:
+    def __init__(self, true_value, prediction):
+        self.true_value = np.array(true_value)
+        self.prediction = np.array(prediction)
 
-class ActivationFunctions:
-
-    def __init__(self):
+    def __call__(self):
         pass
 
-    # Only returns the values for layers without activation
-    def none(self, values):
-        return values
-
-    # Non-linear Activation Functions
-
-    def elu(self, values, a=0.1, gradient=1):
-        values = np.array(values, dtype=float)
-        data = np.where(values > 0, values*gradient, a*(np.exp(values)-1))
-        return data
-
-    def hardsigmoid(self, values):
-        values = np.array(values)
-        data = np.maximum(0, np.minimum(1, (values  + 2) / 4))
-        return data
-
-    def hardtahn(self, values, min_value=-1, max_value=1):
-        values = np.array(values)
-        data = np.where(values > max_value, 1, np.where(values < min_value, -1, values))
-        return data
-
-    def hardswish(self, values):
-        values = np.array(values)
-        data = np.where(values <= -3, 0, np.where(values >= 3, values, (values * (values+3))/6))
-        return data
-
-    def logsigmoid(self, values):
-        values = np.array(values)
-        data = np.log(1/(1+np.exp(-values)))
-        return data
-
-    def sigmoid(self, values):
-        values = np.array(values)
-        data = 1 / (1 + np.exp(-values))
-        return data
-
-    def relu(self, values, gradient=1):
-        values = np.array(values, dtype=float)
-        data = np.where(values > 0, values*gradient, 0)
-        return data
-    
-    def tanh(self, values):
-        values = np.array(values)
-        data = 2/(1 + np.exp(-2*values)) - 1
-        return data
-
-    def binarystep(self, values):
-        values = np.array(values, dtype=float)
-        data = np.heaviside(values, 1)
-        return data
-
-    def linear(self, values, gradient=2):
-        return np.array(values, dtype=float)*gradient
+    def backward(self):
+        pass
 
 
-    def leakyrelu(self, values, gradient=1, leak=0.01):
-        values = np.array(values, dtype=float)
-        data = np.where(values > 0, values*gradient, values*leak)    
-        return data                      
+# This is a child class of the loss class, it calculates the MSE Loss
+class MSELoss(Loss):
+    def __init__(self, true_value, prediction):
+        super().__init__(true_value, prediction)
 
-    def swish(self, values):
-        values = np.array(values, dtype=float)
-        data = values/(1-np.exp(-values))
-        return data
+    def __call__(self):
+        return np.mean(np.power(self.true_value - self.prediction, 2))
 
-    # Linear Activation Functions 
-
-    def softmax(self, values):
-        values = np.array(values)
-        data = np.exp(values) / np.exp(values).sum()
-        return data
+    def backward(self):
+        return 2 * (self.prediction - self.true_value) / np.size(self.true_value)
 
 
-# We initialize the class with a keyword for easier use, namely, instead of writing activation = ActivationFunctions() 
-# you just import activation class from Tipo.Functional to get access to all the activation functions
+# This is a child class of the loss class, it calculates the MAE Loss
+class MAELoss(Loss):
+    def __init__(self, true_value, prediction):
+        super().__init__(true_value, prediction)
 
-activation = ActivationFunctions()
+    def __call__(self):
+        return np.mean(np.abs(self.true_value - self.prediction))
+
+    def backward(self):
+        pass
 
 
-# This class includes all the important Loss and Cost functions, we have made the use of these functions
-# much easier by naming the methods to relevant names and using few parameters but at the same time giving 
-# more parameters for fine-tuning to our professional users.
+# This is a child class of the loss class, it calculates the MBE Loss
+class MBELoss(Loss):
+    def __init__(self, true_value, prediction):
+        super().__init__(true_value, prediction)
+
+    def __call__(self):
+        return (self.true_value - self.prediction).mean()
+
+    def backward(self):
+        pass
 
 
-class LossFunctions:
+# This is the main class for all the activation functions
+class Activation:
 
-  def __init__(self):
-       pass
+    # We declare the input, activation function and the prime activation function
+    def __init__(self, input, activation=None, d_activation=None):
+        self.input = np.array(input)
+        self.activation = activation
+        self.d_activation = d_activation
 
-  def MAELoss(self):
-    def MAELossCall(true_value, prediction):
-        true_value, prediction = np.array(true_value), np.array(prediction)
-        return np.mean(np.abs(true_value - prediction))
-    return MAELossCall
+    # Passes data through with the selected activation
+    def passdata(self):
+        return self.activation
 
-  def MSELoss(self):
-    def MSELossCall(true_value, prediction):
-        true_value, prediction = np.array(true_value), np.array(prediction)
-        return np.square(true_value - prediction).mean()
-    return MSELossCall
+    # Passes data through with the selected prime activation
+    def backward(self):
+        return self.d_activation
 
-  def MBELoss(self):
-    def MBELossCall(true_value, prediction):
-        true_value, prediction = np.array(true_value), np.array(prediction)
-        return (true_value - prediction).mean()
-    return MBELossCall
-    
 
-loss = LossFunctions()
+# This is a child class of the Activation class that applies the ReLu Activation to its input
+class ReLu(Activation):
 
+    def __init__(self, input, gradient=1):
+        super().__init__(input)
+        self.gradient = gradient
+        activation = np.where(self.input > 0, self.input * self.gradient, 0)
+        d_activation = 2
+        super().__init__(input, activation, d_activation)
+
+
+# This is a child class of the Activation class that applies the ReLu Activation to its input
+class Sigmoid(Activation):
+
+    def __init__(self, input):
+        super().__init__(input)
+        activation = 1 / (1 + np.exp(-self.input))
+        d_activation = 2
+        super().__init__(input, activation, d_activation)
+
+
+# This is a child class of the Activation class that applies the ReLu Activation to its input
+class ELU(Activation):
+
+    def __init__(self, input, a=0.1, gradient=1):
+        super().__init__(input)
+        self.gradient, self.a = gradient, a
+        activation = np.where(self.input > 0, self.input * self.gradient, self.a * (np.exp(self.input) - 1))
+        d_activation = 2
+        super().__init__(input, activation, d_activation)
+
+
+# This is a child class of the Activation class that applies the ReLu Activation to its input
+class HardSigmoid(Activation):
+
+    def __init__(self, input):
+        super().__init__(input)
+        activation = np.maximum(0, np.minimum(1, (self.input + 2) / 4))
+        d_activation = 2
+        super().__init__(input, activation, d_activation)
+
+
+# This is a child class of the Activation class that applies the ReLu Activation to its input
+class HardTanh(Activation):
+
+    def __init__(self, input, min_value=-1, max_value=1):
+        super().__init__(input)
+        self.min_value, self.max_value = min_value, max_value
+        activation = np.where(self.input > self.max_value, 1, np.where(self.input < self.min_value, -1, self.input))
+        d_activation = 2
+        super().__init__(input, activation, d_activation)
+
+
+# This is a child class of the Activation class that applies the ReLu Activation to its input
+class HardSwish(Activation):
+
+    def __init__(self, input):
+        super().__init__(input)
+        activation = np.where(self.input <= -3, 0, np.where(self.input >= 3,
+                                                            self.input, (self.input * (self.input + 3)) / 6))
+        d_activation = 2
+        super().__init__(input, activation, d_activation)
+
+
+# This is a child class of the Activation class that applies the ReLu Activation to its input
+class BinaryStep(Activation):
+
+    def __init__(self, input):
+        super().__init__(input)
+        activation = np.heaviside(self.input, 1)
+        d_activation = 2
+        super().__init__(input, activation, d_activation)
+
+
+# This is a child class of the Activation class that applies the ReLu Activation to its input
+class LinearActivation(Activation):
+
+    def __init__(self, input, gradient=2):
+        super().__init__(input)
+        self.gradient = gradient
+        activation = np.array(self.input, dtype=float) * self.gradient
+        d_activation = 2
+        super().__init__(input, activation, d_activation)
+
+
+# This is a child class of the Activation class that applies the ReLu Activation to its input
+class Swish(Activation):
+
+    def __init__(self, input):
+        super().__init__(input)
+        activation = self.input / (1 - np.exp(-self.input))
+        d_activation = 2
+        super().__init__(input, activation, d_activation)
