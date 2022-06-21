@@ -1,35 +1,42 @@
 import numpy as np
-from tipo.Functional import activation
-import gc
 
 
-# This is the
-class Node():
-
+class Node(object):
   def __init__(self):
+    self.input = None
+    self.output = None
+
+  def forward(self, input):
     pass
 
-  # This methods prints the network structure of our network when the class gets called
-  def __call__(self): 
-    for obj in gc.get_objects():
-      if isinstance(obj, self.LinearLayer):
-        print('[' + str(obj) + ", num_inputs: " + str(obj.num_inputs) + " num_neurons:"  + str(obj.num_neurons) + '],')
+  def backward(self, output_gradient, lr):
+    pass
 
 
-  # This class takes care of the Feed forward layers
-  class LinearLayer():
 
-    def __init__(self, num_inputs, num_neurons, bias_enabled=True):
+class DenseLayer(Node):
+  def __init__(self, input_size, output_size, bias_enabled=True):
+    self.bias_enabled = bias_enabled
+    self.weights = np.random.randn(output_size, input_size)
+    self.biases = np.where(bias_enabled==True, np.random.randn(1, output_size), np.zeros((1, output_size)))
+    
+  
+  def forward(self, input):
+    self.input = input
+    output = np.dot(self.weights, self.input) + self.biases
+    return output
 
-      self.num_inputs = num_inputs
-      self.num_neurons = num_neurons
 
-      self.weights = 0.10 * np.random.randn(num_inputs, num_neurons)
-      self.biases = np.where(bias_enabled==True, np.random.randn(1, num_neurons), np.zeros((1, num_neurons)))
+  def backward(self, output_gradient, learning_rate):
 
+    # Calculate the adjustment of the weights
+    weights_gradient = np.dot(output_gradient, self.input)
 
-    def __call__(self, batch, activation=activation.none):
-      output = activation(np.dot(batch, self.weights) + self.biases)
-      return output
+    # Update the weights
+    self.weights -= learning_rate * weights_gradient
 
-   
+    # Only update the bias if bias_enabled == True
+    if self.bias_enabled == True:
+      self.biases -= learning_rate * output_gradient
+    
+    return np.dot(self.weights.T, output_gradient)
