@@ -1,6 +1,45 @@
+# Import all the necessary libraries
 import numpy as np
+from tipo.modules import Node
 
 
+# This is class calculates the MSE Loss
+class meanSquareError():
+
+    def __call__(self, true_value, prediction):
+        self.true_value = true_value
+        self.prediction = prediction
+        return np.mean(np.power(self.true_value - self.prediction, 2))
+
+    def backward(self):
+        return 2 * (self.prediction - self.true_value) / np.size(self.true_value)
+
+
+# This is class calculates the MAE Loss
+class meanAbsoluteError():
+
+    def __call__(self, true_value, prediction):
+        self.true_value = true_value
+        self.prediction = prediction
+        return np.mean(np.abs(self.true_value - self.prediction))
+
+    def backward(self):
+        pass
+
+
+# This is class calculates the MBE Loss
+class meanBiasError():
+
+    def __call__(self, true_value, prediction):
+        self.true_value = true_value
+        self.prediction = prediction
+        return (self.true_value - self.prediction).mean()
+
+    def backward(self):
+        pass
+
+
+# This is the parent class of all the activation classes
 class Activation(Node):
   def __init__(self, activation, d_activation):
     self.activation = activation
