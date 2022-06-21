@@ -1,210 +1,108 @@
 import numpy as np
 
 
-# This is the base class for all the loss and cost functions
+class Activation(Node):
+  def __init__(self, activation, d_activation):
+    self.activation = activation
+    self.d_activation = d_activation
 
+  def forward(self, input):
+    self.input = np.array(input)
+    return self.activation(self.input)
 
-
-# This is a child class of the loss class, it calculates the MSE Loss
-class meanSquareError():
-
-    def __call__(self, true_value, prediction):
-        self.true_value = true_value
-        self.prediction = prediction
-        return np.mean(np.power(self.true_value - self.prediction, 2))
-
-    def backward(self):
-        return 2 * (self.prediction - self.true_value) / np.size(self.true_value)
-
-
-# This is a child class of the loss class, it calculates the MAE Loss
-class meanAbsoluteError():
-
-    def __call__(self, true_value, prediction):
-        self.true_value = true_value
-        self.prediction = prediction
-        return np.mean(np.abs(self.true_value - self.prediction))
-
-    def backward(self):
-        pass
-
-
-# This is a child class of the loss class, it calculates the MBE Loss
-class meanBiasError():
-
-    def __call__(self, true_value, prediction):
-        self.true_value = true_value
-        self.prediction = prediction
-        return (self.true_value - self.prediction).mean()
-
-    def backward(self):
-        pass
-
-
-
-# Linear Activation Functions
-# This class applies the ReLu Activation to its input
-class ReLu():
-
-    def __init__(self, inputs, gradient=1):
-      self.gradient = gradient
-      self.inputs = np.array(inputs)
-
-    def __call__(self):
-      return np.where(self.inputs > 0, self.inputs * self.gradient, 0)
-
-    def prime(self):
-      return (self.inputs > 0) * 1
-
-
-# This class applies the Sigmoid Activation to its input
-class Sigmoid():
-
-    def __init__(self, inputs, gradient=1):
-      self.inputs = np.array(inputs)
-      self.activation = 1 / (1 + np.exp(-self.inputs))
-
-    def __call__(self):
-      return self.activation
-
-    def prime(self):
-      return self.activation * (1 - 1 / self.activation)
-
-
-# This class applies the ELU Activation to its input
-class ELU():
-
-    def __init__(self, inputs, a=0.1, gradient=1):
-      self.inputs = np.array(inputs)
-      self.gradient, self.a = gradient, a
-      self.activation = np.where(self.inputs > 0, self.inputs * self.gradient, self.a * (np.exp(self.inputs) - 1))
-
-    def __call__(self):
-      return self.activation
-
-    def prime(self):
-      return np.where(self.inputs <= 0, self.activation+self.a, 1)
+  def backward(self, output_gradient, lr):
+    pass
 
 
 # This class applies the Tanh Activation to its input
-class Tanh():
+class Tanh(Activation):
+  def __init__(self):
+    self.tanh = lambda x: np.tanh(x)
+    self.d_tanh = lambda x: 1 - np.tanh(x) ** 2
+    super().__init__(self.tanh, self.d_tanh)
 
-    def __init__(self, inputs):
-      self.inputs = np.array(inputs)
-      self.activation = np.tanh(self.inputs)
 
-    def __call__(self):
-      return self.activation
+# This class applies the ReLu Activation to its input
+class Relu(Activation):
+  def __init__(self, gradient=1):
+    self.gradient = gradient
+    self.relu = lambda x: np.where(x > 0, x * self.gradient, 0)
+    self.d_relu = lambda x: (x > 0) * 1
+    super().__init__(self.relu, self.d_relu)
 
-    def prime(self):
-      return 1 - self.activation ** 2
+
+# This class applies the Sigmoid Activation to its input
+class Sigmoid(Activation):
+  def __init__(self, gradient=1):
+    self.gradient = gradient
+    self.sigmoid = lambda x: 1 / (1 + np.exp(-x))
+    self.d_sigmoid = lambda x: self.sigmoid * (1 - 1 / self.sigmoid)
+    super().__init__(self.sigmoid, self.d_sigmoid)
+
+
+ # This class applies the ELU Activation to its input
+class ELU(Activation):
+  def __init__(self, a=0.1, gradient=1):
+    self.gradient, self.a = gradient, a
+    self.elu = lambda x: np.where(x > 0, x * self.gradient, self.a * (np.exp(x) - 1))
+    self.d_elu = lambda x: np.where(x <= 0, self.elu+self.a, 1)
+    super().__init__(self.elu, self.d_elu)
 
 
 # This class applies the Leaky ReLu Activation to its input
-class LeakyReLu():
+class LeakyRelu(Activation):
+  def __init__(self, gradient=1, leak=0.01):
+    self.gradient, self.leak = gradient, leak
+    self.leakyrelu = lambda x: np.where(x > 0, x*self.gradient, x*self.leak)  
+    self.d_leakyrelu = lambda x: np.where(x < 0, self.leak, 1)
+    super().__init__(self.leakyrelu, self.d_leakyrelu)
 
-    def __init__(self, inputs, gradient=1, leak=0.01):
-      self.inputs = np.array(inputs)
-      self.gradient, self.leak = gradient, leak
-
-    def __call__(self):
-      return np.where(self.inputs > 0, self.inputs*self.gradient, self.inputs*self.leak)  
-    
-    def prime(self):
-      return np.where(self.inputs < 0, self.leak, 1)
-       
 
 # This class applies the Hard Sigmoid Activation to its input
-class HardSigmoid():
-
-    def __init__(self, inputs):
-      self.inputs = np.array(inputs)
-
-    def __call__(self):
-      return np.maximum(0, np.minimum(1, (self.inputs + 2) / 4))
-    
-    def prime(self):
-      return None
+class HardSigmoid(Activation):
+  def __init__(self):
+    self.hardsigmoid = lambda x: np.maximum(0, np.minimum(1, (x + 2) / 4))
+    self.d_hardsigmoid = lambda x: None
+    super().__init__(self.hardsigmoid, self.d_hardsigmoid)
 
 
-# This class applies the Hard Tanh Activation to its input
-class HardTanh():
-
-    def __init__(self, inputs, min_value=-1, max_value=1):
-      self.inputs = np.array(inputs)
-      self.min_value, self.max_value = min_value, max_value
-
-    def __call__(self):
-      return np.where(self.inputs > self.max_value, 1, np.where(self.inputs < self.min_value, -1, self.inputs))
-
-    def prime(self):
-      return None
+ # This class applies the Hard Tanh Activation to its input
+class HardTanh(Activation):
+  def __init__(self, min_value=-1, max_value=1):
+    self.min_value, self.max_value = min_value, max_value
+    self.hardtanh = lambda x: np.where(x > self.max_value, 1, np.where(x < self.min_value, -1, x))   
+    self.d_hardtanh = lambda x: None 
+    super().__init__(self.hardtanh, self.d_hardtanh)
 
 
 # This class applies the Hard Swish Activation to its input
-class HardSwish():
-
-    def __init__(self, inputs):
-      self.inputs = np.array(inputs)
-    
-    def __call__(self):
-      return np.where(self.inputs <= -3, 0, np.where(self.inputs >= 3,
-                                                    self.inputs, (self.inputs * (self.inputs + 3)) / 6))
-    
-    def prime(self):
-      return None
+class HardSwish(Activation):
+  def __init__(self):
+    self.hardswish = lambda x: np.where(x <= -3, 0, np.where(x >= 3, x, (x * (x + 3)) / 6))
+    self.d_hardswish = lambda x: None
+    super().__init__(self.hardswish, self.d_hardswish)
 
 
 # This class applies the Binary Step Activation to its input
-class BinaryStep():
-
-    def __init__(self, inputs):
-      self.inputs = np.array(inputs)
-    
-    def __call__(self):
-      return np.heaviside(self.inputs, 1)
-
-    def prime(self):
-      return None
+class BinaryStep(Activation):
+  def __init__(self):
+    self.binarystep = lambda x: np.heaviside(x, 1)
+    self.d_binarystep = lambda x: None
+    super().__init__(self.binarystep, self.d_binarystep)
 
 
 # This class applies the Linear Activation to its input
-class Linear():
-
-    def __init__(self, inputs, gradient=2):
-      self.inputs = np.array(inputs)
-      self.gradient = gradient
-
-    def __call__(self):
-      return np.array(self.inputs, dtype=float) * self.gradient
-
-    def prime(self):
-      return 1
+class Linear(Activation):
+  def __init__(self, gradient=2):
+    self.gradient = gradient
+    self.linear = lambda x: x * self.gradient
+    self.d_linear = lambda x: 1
+    super().__init__(self.linear, self.d_linear)
 
 
 # This class applies the Swish Activation to its input
-class Swish():
-
-    def __init__(self, inputs):
-      self.inputs = np.array(inputs)
-
-    def __call__(self):
-      return self.inputs / (1 - np.exp(-self.inputs))
-
-    def prime(self):
-      return self.inputs / (1 + np.exp(-self.inputs)) + (1. / (1. + np.exp(-self.inputs))) * (1. - self.inputs * (1. / (1. + np.exp(-self.inputs))))
-
-
-# Non Linear Activation functions 
-# This class that applies the Softmax Activation to its input
-class Softmax():
-
-    def __init__(self, inputs):
-      self.inputs = np.array(inputs)
-
-    def __call__(self):
-      return np.exp(self.inputs)  / np.exp(self.inputs).sum()
-
-    def prime(self):
-      return None
-
+class Swish(Activation):
+  def __init__(self):
+    self.swish = lambda x: x / (1 - np.exp(-x))
+    self.d_swish = lambda x: x / (1 + np.exp(-x)) + (1. / (1. + np.exp(-x))) * (1. - x * (1. / (1. + np.exp(-x))))
+    super().__init__(self.swish, self.d_swish)
